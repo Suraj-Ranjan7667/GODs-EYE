@@ -1,12 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Capture | God's Eye</title>
   <link rel="stylesheet" href="capture-style.css">
-  <link rel="stylesheet" href="capture-style.css">
   <link href="https://fonts.googleapis.com/css2?family=Jockey+One&family=Space+Grotesk&display=swap" rel="stylesheet">
+
+  <style>
+    /* layout */
+    .capture-grid { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
+    .input-box, .output-box { flex: 1 1 300px; }
+    .input-box img { display: block; width: 100%; max-width: 800px; border: 1px solid #ccc; }
+    .output-box pre {
+      background: #f9f9f9; padding: 15px; border: 1px solid #ddd;
+      font-family: monospace; white-space: pre-wrap;
+      max-height: 400px; overflow-y: auto;
+    }
+    .cta-button-wrapper { margin-top: 20px; }
+    .cta-button-wrapper .btn { margin-right: 10px; }
+  </style>
 </head>
 <body>
   <header class="navbar">
@@ -18,52 +31,100 @@
 
   <section class="scan-header">
     <h1 class="subheading">Originality Seen and Secured</h1>
-    <p class="description">AI-driven analysis to detect AI-generated content, spot plagiarism and protect originality</p>
+    <p class="description">
+      AI-driven analysis to detect AI-generated content, spot plagiarism and protect originality
+    </p>
   </section>
 
   <section class="capture-grid">
     <div class="input-box">
-     <img src="https://adapting-toucan-better.ngrok-free.app/mjpeg/1" alt="Camera Feed">
+   
+
+      <img
+        id="camStream"
+        crossorigin="anonymous"
+        src="https://adapting-toucan-better.ngrok-free.app/mjpeg/1"
+        alt="Camera Feed"
+      >
     </div>
     <div class="output-box">
       <h2>Output</h2>
+      <pre id="results"></pre>
     </div>
   </section>
 
   <div class="cta-button-wrapper">
     <button class="btn capture-btn">Capture</button>
+    <button class="btn clear-btn">Clear</button>
   </div>
+
   <script>
+    const camImg     = document.getElementById('camStream');
     const captureBtn = document.querySelector('.capture-btn');
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.src = "https://adapting-toucan-better.ngrok-free.app/mjpeg/1"; // replace with actual ESP32 stream URL
-    
+    const clearBtn   = document.querySelector('.clear-btn');
+    const resultsEl  = document.getElementById('results');
+
     captureBtn.addEventListener('click', async () => {
-      const canvas = document.createElement('canvas');
-      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
-    
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-    
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
-      const formData = new FormData();
-      formData.append("image", blob, "esp32-capture.jpg");
-    
-      try {
-        const res = await fetch("https://shrew-concrete-cobra.ngrok-free.app/api/check-content", {
-          method: "POST",
-          body: formData
+      // wait for at least one frame
+      if (!camImg.complete) {
+        await new Promise((res, rej) => {
+          camImg.onload  = res;
+          camImg.onerror = () => rej(new Error('Could not load camera stream'));
         });
-        const data = await res.json();
-        alert(`Plagiarism: ${data.plagiarism.summary.percent}%\nAI Score: ${data.ai.percent}%`);
+      }
+
+      // draw into canvas
+      const canvas = document.createElement('canvas');
+      canvas.width  = camImg.naturalWidth;
+      canvas.height = camImg.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(camImg, 0, 0);
+
+      // to JPEG blob
+      const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg'));
+      const formData = new FormData();
+      formData.append('image', blob, 'capture.jpg');
+
+      // POST & display
+      resultsEl.textContent = 'Analyzing…';
+      captureBtn.disabled = true;
+      try {
+        const resp = await fetch(
+          'https://shrew-concrete-cobra.ngrok-free.app/api/check-content',
+          { method: 'POST', body: formData }
+        );
+        if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
+        const { plagiarism, ai } = await resp.json();
+
+        // build a human-readable report
+        let out = '';
+        out += `Overall Plagiarism: ${plagiarism.summary.percent}% (${plagiarism.summary.plagiarizedSnips}/${plagiarism.summary.totalSnippets} snippets)\n`;
+        out += `AI Score:           ${ai.percent}% → ${ai.likely_ai ? 'Likely AI-generated' : 'Likely Human-written'}\n\n`;
+        out += 'Snippet Details:\n\n';
+
+        plagiarism.results.forEach((item, idx) => {
+          out += `${idx+1}. ${item.snippet.replace(/\n/g, ' ')}\n`;
+          out += `     Matches: ${item.totalHits}\n`;
+          if (item.sources.length) {
+            out += `     Sources:\n`;
+            item.sources.forEach(src => {
+              out += `       • ${src}\n`;
+            });
+          }
+          out += '\n';
+        });
+
+        resultsEl.textContent = out;
       } catch (err) {
-        alert("Analysis failed: " + err.message);
+        resultsEl.textContent = 'Error: ' + err.message;
+      } finally {
+        captureBtn.disabled = false;
       }
     });
-    </script>
-    
+
+    clearBtn.addEventListener('click', () => {
+      resultsEl.textContent = '';
+    });
+  </script>
 </body>
 </html>
