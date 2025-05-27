@@ -23,7 +23,7 @@
 
   <section class="capture-grid">
     <div class="input-box">
-     <img src="http://192.168.155.118/mjpeg/1" alt="Camera Feed">
+     <img src="https://adapting-toucan-better.ngrok-free.app/mjpeg/1" alt="Camera Feed">
     </div>
     <div class="output-box">
       <h2>Output</h2>
@@ -37,7 +37,7 @@
     const captureBtn = document.querySelector('.capture-btn');
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.src = "http://192.168.155.118/mjpeg/1"; // replace with actual ESP32 stream URL
+    img.src = "https://adapting-toucan-better.ngrok-free.app/mjpeg/1"; // replace with actual ESP32 stream URL
     
     captureBtn.addEventListener('click', async () => {
       const canvas = document.createElement('canvas');
