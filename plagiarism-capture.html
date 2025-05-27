@@ -9,19 +9,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Jockey+One&family=Space+Grotesk&display=swap" rel="stylesheet">
 </head>
 <body>
-   <header class="navbar">
-  <div class="nav-left">
-    <img src="logo.png" alt="Logo" class="logo-img" />
-  </div>
-
-  <div class="nav-center">
-    <span class="title">God's Eye</span>
-  </div>
-
-  <div class="nav-right">
-    <img src="images/gni.jpg" alt="GNITC" class="nav-icon" />
-  </div>
-</header>
+  <header class="navbar">
+    <div class="logo">
+      <img src="logo.png" alt="Logo">
+      <span class="title">God's Eye</span>
+    </div>
+  </header>
 
   <section class="scan-header">
     <h1 class="subheading">Originality Seen and Secured</h1>
@@ -30,7 +23,7 @@
 
   <section class="capture-grid">
     <div class="input-box">
-     <img src="http://192.168.x.x/capture" alt="Camera Feed">
+     <img src="http://192.168.155.118/mjpeg/1" alt="Camera Feed">
     </div>
     <div class="output-box">
       <h2>Output</h2>
@@ -40,5 +33,37 @@
   <div class="cta-button-wrapper">
     <button class="btn capture-btn">Capture</button>
   </div>
+  <script>
+    const captureBtn = document.querySelector('.capture-btn');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = "http://192.168.155.118/mjpeg/1"; // replace with actual ESP32 stream URL
+    
+    captureBtn.addEventListener('click', async () => {
+      const canvas = document.createElement('canvas');
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; });
+    
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+    
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+      const formData = new FormData();
+      formData.append("image", blob, "esp32-capture.jpg");
+    
+      try {
+        const res = await fetch("https://shrew-concrete-cobra.ngrok-free.app/api/check-content", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        alert(`Plagiarism: ${data.plagiarism.summary.percent}%\nAI Score: ${data.ai.percent}%`);
+      } catch (err) {
+        alert("Analysis failed: " + err.message);
+      }
+    });
+    </script>
+    
 </body>
 </html>

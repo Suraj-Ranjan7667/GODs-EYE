@@ -6,22 +6,86 @@
   <title>Scan Content | God's Eye</title>
   <link rel="stylesheet" href="scanner-style.css">
   <link href="https://fonts.googleapis.com/css2?family=Jockey+One&family=Inria+Sans&family=Space+Grotesk&display=swap" rel="stylesheet">
+
+  <style>
+    /* Textarea base styling */
+    #scan-input {
+      width: 100%;
+      min-height: 300px;
+      padding: 12px;
+      box-sizing: border-box;
+      font-family: 'Inria Sans', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      resize: vertical;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    #scan-input::placeholder {
+      color: #999;
+    }
+
+    /* Status colors */
+    #scan-input.status-plag {
+      color: #e74c3c;
+      border-color: #e74c3c;
+    }
+    #scan-input.status-ok {
+      color: #27ae60;
+      border-color: #27ae60;
+    }
+    #scan-input.status-ai {
+      color: #8e44ad;
+      border-color: #8e44ad;
+    }
+
+    /* Legend styling */
+    .legend {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .legend p {
+      margin: 4px 0;
+      display: flex;
+      align-items: center;
+    }
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      margin-right: 8px;
+      border-radius: 3px;
+    }
+    .legend-box.status-plag {
+      background: #e74c3c;
+    }
+    .legend-box.status-ok {
+      background: #27ae60;
+    }
+    .legend-box.status-ai {
+      background: #8e44ad;
+    }
+    
+    /* Optional: style Clear button similarly */
+    .clear-btn {
+      margin-left: 8px;
+      background: #bdc3c7;
+    }
+    .clear-btn:hover {
+      background: #95a5a6;
+    }
+  </style>
 </head>
 <body>
   <!-- Navbar -->
-    <header class="navbar">
-  <div class="nav-left">
-    <img src="logo.png" alt="Logo" class="logo-img" />
-  </div>
-
-  <div class="nav-center">
-    <span class="title">God's Eye</span>
-  </div>
-
-  <div class="nav-right">
-    <img src="images/gni.jpg" alt="GNITC" class="nav-icon" />
-  </div>
-</header>
+  <header class="navbar">
+    <div class="logo">
+      <img src="logo.png" alt="Logo" />
+      <span class="title">God's Eye</span>
+    </div>
+  </header>
 
   <!-- Headings -->
   <section class="scan-header">
@@ -32,13 +96,18 @@
   <!-- Scanner Layout -->
   <section class="scanner-box">
     <div class="scanner-left">
-      <textarea placeholder="Enter text or upload file to check for plagiarism and correct errors."></textarea>
+      <textarea
+        id="scan-input"
+        placeholder="Enter text or upload file to check for plagiarism and correct errors."
+        rows="15"
+      ></textarea>
       <div class="scanner-actions">
         <button class="btn scan-btn">Scan for Content</button>
         <label class="upload-label">
-          <input type="file" hidden>
+          <input type="file" id="scan-file" accept="image/*" hidden>
           <span>Upload Image</span>
         </label>
+        <button type="button" id="clear-btn" class="btn clear-btn">Clear</button>
         <span class="char-count">0/1000</span>
       </div>
     </div>
@@ -49,12 +118,109 @@
         <li>Step 2: Click to scan for plagiarism.</li>
         <li>Step 3: Review the results for instances of potential plagiarism, plus additional writing issues.</li>
       </ul>
+      <!-- Legend -->
+      <div class="legend">
+        <p><span class="legend-box status-plag"></span>Plagiarism detected</p>
+        <p><span class="legend-box status-ok"></span>No plagiarism</p>
+        <p><span class="legend-box status-ai"></span>Likely AI-generated</p>
+      </div>
     </div>
   </section>
 
   <!-- Bottom CTA -->
   <div class="cta-button-wrapper">
-    <button class="btn cta-btn" onclick="window.location.href='plagiarism-capture.html'">Use God’s Eye</button>
+    <button class="btn cta-btn" onclick="window.location.href='plagiarism-capture.html'">
+      Use God’s Eye
+    </button>
   </div>
+
+  <script>
+    const textarea = document.getElementById('scan-input');
+    const fileInput = document.getElementById('scan-file');
+    const scanBtn   = document.querySelector('.scan-btn');
+    const clearBtn  = document.getElementById('clear-btn');
+    const charCount = document.querySelector('.char-count');
+
+    // Live character count
+    textarea.addEventListener('input', () => {
+      charCount.textContent = `${textarea.value.length}/1000`;
+    });
+
+    // Main scan handler for text or image
+    scanBtn.addEventListener('click', () => {
+      runScan({ text: textarea.value.trim(), file: fileInput.files[0] });
+    });
+
+    // Auto-scan on image selection
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) {
+        runScan({ text: '', file: fileInput.files[0] });
+      }
+    });
+
+    // Clear button -> reload page
+    clearBtn.addEventListener('click', () => {
+      window.location.reload();
+    });
+
+    async function runScan({ text, file }) {
+      if (!text && !file) {
+        alert("Please enter text or upload an image.");
+        return;
+      }
+
+      // reset UI
+      textarea.classList.remove('status-plag','status-ok','status-ai');
+      textarea.value      = '';
+      textarea.placeholder = "Analyzing... please wait.";
+      scanBtn.disabled     = true;
+
+      // prepare payload
+      const formData = new FormData();
+      if (text) formData.append("text", text);
+      if (file) formData.append("image", file);
+
+      try {
+        const res  = await fetch("https://shrew-concrete-cobra.ngrok-free.app/api/check-content", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+        const { plagiarism, ai } = data;
+        const { percent }         = plagiarism.summary;
+
+        // set status
+        if (ai.likely_ai)               textarea.classList.add('status-ai');
+        else if (parseFloat(percent) > 0) textarea.classList.add('status-plag');
+        else                             textarea.classList.add('status-ok');
+
+        // build report
+        let rpt = 
+          `Overall Plagiarism: ${plagiarism.summary.percent}% (${plagiarism.summary.plagiarizedSnips}/${plagiarism.summary.totalSnippets})\n` +
+          `AI Score: ${ai.percent}% (${ai.likely_ai ? 'Likely AI-generated' : 'Likely Human-written'})\n\n` +
+          "Detailed Snippet Analysis:\n\n";
+
+        plagiarism.results.forEach((item,i) => {
+          rpt += `${i+1}. ${item.snippet.replace(/\n/g,' ')}\n` +
+                 `   Matches: ${item.totalHits}\n`;
+          if (item.sources.length) {
+            rpt += "   Sources:\n";
+            item.sources.forEach(src => {
+              rpt += `     - ${src}\n`;
+            });
+          }
+          rpt += "\n";
+        });
+
+        textarea.value = rpt.trim();
+      } catch (err) {
+        console.error(err);
+        textarea.placeholder = "Analysis failed. Please try again.";
+      } finally {
+        scanBtn.disabled = false;
+        fileInput.value  = "";  // allow same file re-upload
+      }
+    }
+  </script>
 </body>
 </html>
