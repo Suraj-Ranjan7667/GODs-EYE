@@ -48,6 +48,14 @@
       <option value="inbuilt">Inbuilt Camera</option>
     </select>
   </div>
+  <div style="margin: 10px 0;">
+    <label for="facingModeSelect"><strong>Camera Facing:</strong></label>
+    <select id="facingModeSelect">
+      <option value="environment">Rear</option>
+      <option value="user">Front</option>
+    </select>
+  </div>
+  
 
   <section class="capture-grid">
     <div class="input-box">
@@ -81,26 +89,44 @@
     let stream = null;
 
     // Handle camera mode change
-    cameraMode.addEventListener('change', async () => {
-      if (cameraMode.value === 'inbuilt') {
-        iframe.style.display = 'none';
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          video.srcObject = stream;
-          video.style.display = 'block';
-        } catch (err) {
-          alert('Error accessing inbuilt camera: ' + err.message);
-        }
-      } else {
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
-          video.srcObject = null;
-          stream = null;
-        }
-        video.style.display = 'none';
-        iframe.style.display = 'block';
-      }
+    const facingModeSelect = document.getElementById('facingModeSelect');
+
+async function startInbuiltCamera(facing = 'environment') {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+  }
+
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: facing } }
     });
+    video.srcObject = stream;
+    video.style.display = 'block';
+  } catch (err) {
+    alert('Error accessing inbuilt camera: ' + err.message);
+  }
+}
+
+cameraMode.addEventListener('change', () => {
+  if (cameraMode.value === 'inbuilt') {
+    iframe.style.display = 'none';
+    startInbuiltCamera(facingModeSelect.value);
+  } else {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
+      stream = null;
+    }
+    video.style.display = 'none';
+    iframe.style.display = 'block';
+  }
+});
+
+facingModeSelect.addEventListener('change', () => {
+  if (cameraMode.value === 'inbuilt') {
+    startInbuiltCamera(facingModeSelect.value);
+  }
+});
 
     // Capture button
     captureBtn.addEventListener('click', async () => {
