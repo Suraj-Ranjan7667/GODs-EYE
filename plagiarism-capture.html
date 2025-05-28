@@ -73,7 +73,7 @@
   captureBtn.disabled = true;
 
   try {
-    const resp = await fetch('/snapshot'); // this calls your Node.js `/snapshot` route
+    const resp = await fetch('https://lp-menu-happiness-laundry.trycloudflare.com/snapshot'); // this calls your Node.js `/snapshot` route
     if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
     const { plagiarism, ai } = await resp.json();
 
