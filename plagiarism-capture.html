@@ -61,7 +61,7 @@
     <div class="input-box">
       <iframe
         id="camStreamIframe"
-        src="https://lp-menu-happiness-laundry.trycloudflare.com/"
+        src="https://app.icanseeyou.in/stream/"
         allowfullscreen
       ></iframe>
       <video id="inbuiltVideo" autoplay playsinline></video>
@@ -136,7 +136,7 @@ facingModeSelect.addEventListener('change', () => {
       try {
         if (cameraMode.value === 'iframe') {
           // Use iframe camera (snapshot API)
-          const resp = await fetch('https://lp-menu-happiness-laundry.trycloudflare.com/snapshot');
+          const resp = await fetch('https://app.icanseeyou.in/stream/snapshot');
           if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
           const { plagiarism, ai } = await resp.json();
           displayResults(plagiarism, ai);
