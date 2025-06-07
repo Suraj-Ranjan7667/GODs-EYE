@@ -61,7 +61,7 @@
     <div class="input-box">
       <iframe
         id="camStreamIframe"
-        src="https://app.icanseeyou.in/stream/"
+        src="https://app.icanseeyou.in/"
         allowfullscreen
       ></iframe>
       <video id="inbuiltVideo" autoplay playsinline></video>
@@ -136,7 +136,7 @@ facingModeSelect.addEventListener('change', () => {
       try {
         if (cameraMode.value === 'iframe') {
           // Use iframe camera (snapshot API)
-          const resp = await fetch('https://app.icanseeyou.in/stream/snapshot');
+          const resp = await fetch('https://app.icanseeyou.in/snapshot');
           if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
           const { plagiarism, ai } = await resp.json();
           displayResults(plagiarism, ai);
