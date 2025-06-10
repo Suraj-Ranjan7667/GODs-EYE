@@ -181,7 +181,7 @@
       if (file) formData.append("image", file);
 
       try {
-        const res  = await fetch("https://shrew-concrete-cobra.ngrok-free.app/api/check-content", {
+        const res  = await fetch("http://147.93.20.156:3000/api/check-content", {
           method: "POST",
           body: formData
         });
