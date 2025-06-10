@@ -151,7 +151,7 @@ facingModeSelect.addEventListener('change', () => {
           const formData = new FormData();
           formData.append('image', blob, 'capture.jpg');
 
-          const resp = await fetch('https://147.93.20.156:3000/api/check-content', {
+          const resp = await fetch('https://khutlai.icanseeyou.in/api/check-content', {
             method: 'POST',
             body: formData
           });
