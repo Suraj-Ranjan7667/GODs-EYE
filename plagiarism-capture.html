@@ -2,197 +2,355 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Capture | God's Eye</title>
-  <link rel="stylesheet" href="capture-style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>God's Eye | Capture</title>
   <link href="https://fonts.googleapis.com/css2?family=Jockey+One&family=Space+Grotesk&display=swap" rel="stylesheet">
-
   <style>
-    .capture-grid { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 20px; }
-    .input-box, .output-box { flex: 1 1 300px; }
-    .input-box img { display: block; width: 100%; max-width: 800px; border: 1px solid #ccc; }
-    .output-box pre {
-      background: #f9f9f9; padding: 15px; border: 1px solid #ddd;
-      font-family: monospace; white-space: pre-wrap;
-      max-height: 400px; overflow-y: auto;
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: #ffffff;
+      color: #111827;
     }
-    .cta-button-wrapper { margin-top: 20px; }
-    .cta-button-wrapper .btn { margin-right: 10px; }
-    iframe, video {
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+
+    .logo img {
+      width: 50px;
+      height: 50px;
+      margin-right: 10px;
+    }
+
+    .title {
+      font-size: 2.5rem;
+      color: #f97316;
+      font-family: 'Jockey One', sans-serif;
+    }
+
+    .main-content {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .main-content h1 {
+      font-size: 2rem;
+      color: #f97316;
+      font-family: 'Jockey One', sans-serif;
+    }
+
+    .main-content p {
+      max-width: 800px;
+      margin: 0 auto;
+      font-size: 1.2rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    select {
+      font-size: 1rem;
+      padding: 0.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .video-container {
       width: 100%;
-      height: 400px;
-      border: 1px solid black;
+      padding-top: 100%;
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
     }
-    #inbuiltVideo { display: none; }
+
+    video, iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      border: none;
+    }
+
+    .buttons {
+      text-align: center;
+      margin: 2rem;
+    }
+
+    .buttons button {
+      font-size: 1.2rem;
+      padding: 0.75rem 2rem;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 0.5rem;
+    }
+
+    .capture-btn {
+      background-color: #06b6d4;
+      color: white;
+    }
+
+    .capture-btn:hover {
+      background-color: #0284c7;
+    }
+
+    .clear-btn {
+      background-color: #f43f5e;
+      color: white;
+    }
+
+    #results {
+      text-align: left;
+      font-size: 1rem;
+      padding: 1rem;
+      background: #f9fafb;
+      border-radius: 10px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    #results a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    #results a:hover {
+      text-decoration: underline;
+    }
+
+    #results::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #results::-webkit-scrollbar-thumb {
+      background-color: rgba(100, 100, 100, 0.3);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .title {
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <header class="navbar">
+  <header>
     <div class="logo">
       <img src="logo.png" alt="Logo">
       <span class="title">God's Eye</span>
     </div>
   </header>
 
-  <section class="scan-header">
-    <h1 class="subheading">Originality Seen and Secured</h1>
-    <p class="description">
-      AI-driven analysis to detect AI-generated content, spot plagiarism and protect originality
-    </p>
+  <section class="main-content">
+    <h1>Originality Seen and Secured</h1>
+    <p>AI-driven analysis to detect AI-generated content, spot plagiarism and protect originality.</p>
   </section>
 
-  <div style="margin: 20px 0;">
-    <label for="cameraMode"><strong>Choose Camera:</strong></label>
-    <select id="cameraMode">
-      <option value="iframe">Iframe Camera</option>
-      <option value="inbuilt">Inbuilt Camera</option>
-    </select>
-  </div>
-  <div style="margin: 10px 0;">
-    <label for="facingModeSelect"><strong>Camera Facing:</strong></label>
-    <select id="facingModeSelect">
-      <option value="environment">Rear</option>
-      <option value="user">Front</option>
-    </select>
-  </div>
-  
+  <div class="controls">
+    <label>
+      Camera Mode:
+      <select id="cameraMode">
+        <option value="iframe">Iframe Camera</option>
+        <option value="inbuilt">Inbuilt Camera</option>
+      </select>
+    </label>
 
-  <section class="capture-grid">
-    <div class="input-box">
-      <iframe
-        id="camStreamIframe"
-        src="https://app.icanseeyou.in/"
-        allowfullscreen
-      ></iframe>
-      <video id="inbuiltVideo" autoplay playsinline></video>
+    <label>
+      Facing:
+      <select id="facingModeSelect">
+        <option value="environment">Rear</option>
+        <option value="user">Front</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <div class="video-container">
+        <iframe id="camStreamIframe" src="https://app.icanseeyou.in/" allowfullscreen></iframe>
+        <video id="inbuiltVideo" autoplay playsinline></video>
+      </div>
     </div>
 
-    <div class="output-box">
+    <div class="box">
       <h2>Output</h2>
-      <pre id="results"></pre>
+      <div id="results"><em>Awaiting capture...</em></div>
     </div>
-  </section>
+  </div>
 
-  <div class="cta-button-wrapper">
-    <button class="btn capture-btn">Capture</button>
-    <button class="btn clear-btn">Clear</button>
+  <div class="buttons">
+    <button class="capture-btn">Capture</button>
+    <button class="clear-btn">Clear</button>
   </div>
 
   <script>
-    const captureBtn = document.querySelector('.capture-btn');
-    const clearBtn = document.querySelector('.clear-btn');
-    const resultsEl = document.getElementById('results');
-    const video = document.getElementById('inbuiltVideo');
-    const cameraMode = document.getElementById('cameraMode');
-    const iframe = document.getElementById('camStreamIframe');
+    window.addEventListener('DOMContentLoaded', () => {
+      const captureBtn = document.querySelector('.capture-btn');
+      const clearBtn = document.querySelector('.clear-btn');
+      const resultsEl = document.getElementById('results');
+      const video = document.getElementById('inbuiltVideo');
+      const iframe = document.getElementById('camStreamIframe');
+      const cameraMode = document.getElementById('cameraMode');
+      const facingModeSelect = document.getElementById('facingModeSelect');
+      let stream = null;
 
-    let stream = null;
-
-    // Handle camera mode change
-    const facingModeSelect = document.getElementById('facingModeSelect');
-
-async function startInbuiltCamera(facing = 'environment') {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
-  }
-
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { exact: facing } }
-    });
-    video.srcObject = stream;
-    video.style.display = 'block';
-  } catch (err) {
-    alert('Error accessing inbuilt camera: ' + err.message);
-  }
-}
-
-cameraMode.addEventListener('change', () => {
-  if (cameraMode.value === 'inbuilt') {
-    iframe.style.display = 'none';
-    startInbuiltCamera(facingModeSelect.value);
-  } else {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      video.srcObject = null;
-      stream = null;
-    }
-    video.style.display = 'none';
-    iframe.style.display = 'block';
-  }
-});
-
-facingModeSelect.addEventListener('change', () => {
-  if (cameraMode.value === 'inbuilt') {
-    startInbuiltCamera(facingModeSelect.value);
-  }
-});
-
-    // Capture button
-    captureBtn.addEventListener('click', async () => {
-      resultsEl.textContent = 'Capturing snapshot…';
-      captureBtn.disabled = true;
-
-      try {
-        if (cameraMode.value === 'iframe') {
-          // Use iframe camera (snapshot API)
-          const resp = await fetch('https://app.icanseeyou.in/snapshot');
-          if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
-          const { plagiarism, ai } = await resp.json();
-          displayResults(plagiarism, ai);
-        } else {
-          // Use inbuilt camera
-          const canvas = document.createElement('canvas');
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
-          const formData = new FormData();
-          formData.append('image', blob, 'capture.jpg');
-
-          const resp = await fetch('https://khutlai.icanseeyou.in/api/check-content', {
-            method: 'POST',
-            body: formData
+      async function startInbuiltCamera(facing = 'environment') {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: { ideal: facing } },
+            audio: false
           });
-
-          if (!resp.ok) throw new Error(`Server returned ${resp.status}`);
-          const { plagiarism, ai } = await resp.json();
-          displayResults(plagiarism, ai);
+          video.srcObject = stream;
+          video.style.display = 'block';
+          iframe.style.display = 'none';
+        } catch (err) {
+          alert('Camera error: ' + err.message);
         }
-      } catch (err) {
-        resultsEl.textContent = 'Error: ' + err.message;
-      } finally {
-        captureBtn.disabled = false;
       }
-    });
 
-    // Clear button
-    clearBtn.addEventListener('click', () => {
-      resultsEl.textContent = '';
-    });
-
-    // Function to display analysis results
-    function displayResults(plagiarism, ai) {
-      let out = '';
-      out += `Overall Plagiarism: ${plagiarism.summary.percent}% (${plagiarism.summary.plagiarizedSnips}/${plagiarism.summary.totalSnippets} snippets)\n`;
-      out += `AI Score:           ${ai.percent}% → ${ai.likely_ai ? 'Likely AI-generated' : 'Likely Human-written'}\n\n`;
-      out += 'Snippet Details:\n\n';
-
-      plagiarism.results.forEach((item, idx) => {
-        out += `${idx + 1}. ${item.snippet.replace(/\n/g, ' ')}\n`;
-        out += `     Matches: ${item.totalHits}\n`;
-        if (item.sources.length) {
-          out += `     Sources:\n`;
-          item.sources.forEach(src => {
-            out += `       • ${src}\n`;
-          });
+      cameraMode.addEventListener('change', () => {
+        if (cameraMode.value === 'inbuilt') {
+          startInbuiltCamera(facingModeSelect.value);
+        } else {
+          if (stream) stream.getTracks().forEach(track => track.stop());
+          stream = null;
+          video.style.display = 'none';
+          iframe.style.display = 'block';
         }
-        out += '\n';
       });
 
-      resultsEl.textContent = out;
-    }
+      facingModeSelect.addEventListener('change', () => {
+        if (cameraMode.value === 'inbuilt') {
+          startInbuiltCamera(facingModeSelect.value);
+        }
+      });
+
+      captureBtn.addEventListener('click', async () => {
+        resultsEl.innerHTML = '<em>Capturing...</em>';
+        captureBtn.disabled = true;
+
+        try {
+          if (cameraMode.value === 'iframe') {
+            const res = await fetch('https://app.icanseeyou.in/snapshot');
+            const data = await res.json();
+            showResults(data);
+          } else {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+
+            const formData = new FormData();
+            formData.append('image', blob, 'capture.jpg');
+
+            const res = await fetch('https://khutlai.icanseeyou.in/api/check-content', {
+              method: 'POST',
+              body: formData
+            });
+
+            const data = await res.json();
+            showResults(data);
+          }
+        } catch (err) {
+          resultsEl.textContent = 'Error: ' + err.message;
+        } finally {
+          captureBtn.disabled = false;
+        }
+      });
+
+      clearBtn.addEventListener('click', () => {
+        resultsEl.innerHTML = '<em>Awaiting capture...</em>';
+      });
+
+      function showResults({ plagiarism, ai }) {
+        let html = `
+          <h3 style="color:#f97316; margin-top:0;">📝 Analysis Summary</h3>
+          <p><strong>Plagiarism:</strong> ${plagiarism.summary.percent}% detected</p>
+          <p><strong>AI Score:</strong> ${ai.percent}% → <span style="color:${ai.likely_ai ? '#ef4444' : '#10b981'}; font-weight:bold;">
+            ${ai.likely_ai ? 'Likely AI-generated' : 'Likely Human-written'}
+          </span></p>
+          <hr style="margin:1rem 0;" />
+          <h4 style="color:#3b82f6;">🔍 Snippet Analysis</h4>
+        `;
+
+        plagiarism.results.forEach((item, idx) => {
+          html += `
+            <div style="margin-bottom:1.2rem;">
+              <p><strong>${idx + 1}. Snippet:</strong> <em>${item.snippet}</em></p>
+              <p>🔗 <strong>Matches:</strong> ${item.totalHits}</p>
+          `;
+
+          if (item.sources.length) {
+            html += `<ul style="margin-top:0.5rem; padding-left:1.2rem;">`;
+            item.sources.forEach(src => {
+              html += `<li><a href="${src}" target="_blank">${src}</a></li>`;
+            });
+            html += `</ul>`;
+          }
+
+          html += `</div>`;
+        });
+
+        html += `
+          <hr style="margin:1.5rem 0;" />
+          <div style="font-size:0.9rem;">
+            <p><strong>Legend:</strong></p>
+            <ul style="padding-left:1.2rem;">
+              <li><span style="color:#f97316;">Plagiarism %</span>: Percentage of matched content from other sources.</li>
+              <li><span style="color:#10b981;">AI Score</span>: Confidence score that content is written by an AI.</li>
+              <li><span style="color:#ef4444;">Likely AI-generated</span>: High AI score suggests machine-written content.</li>
+            </ul>
+          </div>
+        `;
+
+        resultsEl.innerHTML = html;
+      }
+
+      iframe.style.display = 'block';
+      video.style.display = 'none';
+    });
   </script>
 </body>
 </html>

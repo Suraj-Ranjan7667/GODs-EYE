@@ -4,8 +4,204 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>God's Eye</title>
-  <link rel="stylesheet" href="styles.css" />
+  
   <link href="https://fonts.googleapis.com/css2?family=Jockey+One&display=swap" rel="stylesheet">
+  <style>
+    body {
+  margin: 0;
+  font-family: 'Barlow Condensed', sans-serif;
+  scroll-behavior: smooth;
+  text-align: center;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e5e7eb;
+  position: relative;
+}
+
+.nav-left,
+.nav-right {
+  width: 20%;
+  display: flex;
+  align-items: center;
+}
+
+.nav-center {
+  width: 60%;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-left img {
+  width: 70px;
+  height: 70px;
+}
+
+.nav-right img{
+  width: 170px;
+  height: 70px;
+}
+.nav-icon {
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+}
+
+.title {
+  font-size: 3.5rem;
+  color: #f97316;
+  font-weight: bold;
+  font-family: 'Jockey One', sans-serif;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hero {
+  padding: 4rem 2rem;
+}
+
+.hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .hero-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    gap: 4rem;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.text h2 {
+  font-size: 3rem;
+  font-family: 'Inria Sans', sans-serif;
+  font-weight: 750;
+  color: #111827;
+  margin-bottom: 0rem;
+}
+
+.text h1 {
+  font-size: 4.5rem;
+  font-weight: 100;
+  font-family: 'Jockey One', sans-serif;
+  color: #f97316;
+  margin-bottom: 5rem;
+}
+
+.text p {
+  font-size: 1.75rem;
+  font-family: 'Space Grotesk', sans-serif;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.prototype-note {
+  font-weight: 500;
+}
+
+.btn {
+  display: inline-block;
+  padding: 1rem 2.25rem;
+  background-color: #06b6d4;
+  color: white;
+  border-radius: 9999px;
+  text-decoration: none;
+  font-size: 2.25rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  margin-top: 5rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #FF5722;
+}
+
+.illustration {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.illustration img {
+  width: 250px;
+  max-width: 100%;
+}
+
+.arrow {
+  display: block;
+  font-size: 2rem;
+  margin-top: 2rem;
+  color: black;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+}
+
+.team {
+  background-color: #f3f4f6;
+  padding: 4rem 2rem;
+}
+
+.team-grid {
+  max-width: 1900px;
+  margin: 0 auto;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.card {
+  background-color: #f9fafb;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.name {
+  font-weight: bold;
+  color: #111827;
+}
+
+  </style>
 </head>
 <body>
   <!-- Navbar -->
